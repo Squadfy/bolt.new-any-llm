@@ -19,6 +19,8 @@ import { BaseChat } from './BaseChat';
 import Cookies from 'js-cookie';
 import type { ProviderInfo } from '~/utils/types';
 import { debounce } from '~/utils/debounce';
+import { useTokenState } from '~/components/auth/TokenProvider';
+import { auth } from '~/firebaseConfig';
 
 const toastAnimation = cssTransition({
   enter: 'animated fadeInRight',
@@ -87,6 +89,8 @@ export const ChatImpl = memo(
   ({ description, initialMessages, storeMessageHistory, importChat, exportChat }: ChatProps) => {
     useShortcuts();
 
+    const { setToken } = useTokenState();
+
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [chatStarted, setChatStarted] = useState(initialMessages.length > 0);
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]); // Move here
@@ -112,11 +116,20 @@ export const ChatImpl = memo(
       body: {
         apiKeys,
       },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('backend_token'),
+      },
       onError: (error) => {
         logger.error('Request failed\n\n', error);
         toast.error(
           'There was an error processing your request: ' + (error.message ? error.message : 'No details were returned'),
         );
+
+        if (error.message === 'Token expired') {
+          setToken('');
+          auth.signOut();
+        }
       },
       onFinish: () => {
         logger.debug('Finished streaming');

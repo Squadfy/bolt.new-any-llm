@@ -3,6 +3,7 @@ import { MAX_RESPONSE_SEGMENTS, MAX_TOKENS } from '~/lib/.server/llm/constants';
 import { CONTINUE_PROMPT } from '~/lib/.server/llm/prompts';
 import { streamText, type Messages, type StreamingOptions } from '~/lib/.server/llm/stream-text';
 import SwitchableStream from '~/lib/.server/llm/switchable-stream';
+import jwt from 'jsonwebtoken';
 
 export async function action(args: ActionFunctionArgs) {
   return chatAction(args);
@@ -28,7 +29,48 @@ function parseCookies(cookieHeader: string) {
   return cookies;
 }
 
+export function validateToken(request: Request<unknown, CfProperties<unknown>>) {
+  const authHeader = request.headers.get('Authorization');
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    throw new Response('Missing or malformed Authorization header', {
+      status: 401,
+      statusText: 'Unauthorized',
+    });
+  }
+
+  const token = authHeader.slice(7);
+  let decoded = null;
+
+  try {
+    decoded = jwt.verify(token, process.env.SECRET_SALT as string);
+  } catch (error: any) {
+    if (error.message === 'jwt expired') {
+      throw new Response('Token expired', {
+        status: 401,
+        statusText: 'Unauthorized',
+      });
+    }
+
+    throw new Response('Invalid token', {
+      status: 401,
+      statusText: 'Unauthorized',
+    });
+  }
+
+  const { email } = decoded as unknown as { email: string; uid: string; exp: number; iat: number };
+
+  if (!email.endsWith('@squadfy.com.br')) {
+    throw new Response('Apenas emails @squadfy.com.br são permitidos.', {
+      status: 401,
+      statusText: 'Unauthorized',
+    });
+  }
+}
+
 async function chatAction({ context, request }: ActionFunctionArgs) {
+  validateToken(request);
+
   const { messages } = await request.json<{
     messages: Messages;
     model: string;
@@ -77,8 +119,6 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
       },
     });
   } catch (error: any) {
-    console.log(error);
-
     if (error.message?.includes('API key')) {
       throw new Response('Invalid or missing API key', {
         status: 401,
