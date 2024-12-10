@@ -3,6 +3,7 @@ import { StreamingTextResponse, parseStreamPart } from 'ai';
 import { streamText } from '~/lib/.server/llm/stream-text';
 import { stripIndents } from '~/utils/stripIndent';
 import type { ProviderInfo } from '~/types/model';
+import { validateToken } from './api.chat';
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -12,6 +13,8 @@ export async function action(args: ActionFunctionArgs) {
 }
 
 async function enhancerAction({ context, request }: ActionFunctionArgs) {
+  validateToken(request);
+
   const { message, model, provider, apiKeys } = await request.json<{
     message: string;
     model: string;

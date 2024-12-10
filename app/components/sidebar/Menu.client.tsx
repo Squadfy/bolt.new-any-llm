@@ -11,6 +11,8 @@ import { logger } from '~/utils/logger';
 import { HistoryItem } from './HistoryItem';
 import { binDates } from './date-binning';
 import { useSearchFilter } from '~/lib/hooks/useSearchFilter';
+import { auth } from '~/firebaseConfig';
+import { useTokenState } from '~/components/auth/TokenProvider';
 
 const menuVariants = {
   closed: {
@@ -42,6 +44,13 @@ export const Menu = () => {
   const [open, setOpen] = useState(false);
   const [dialogContent, setDialogContent] = useState<DialogContent>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { setToken } = useTokenState();
+
+  const logout = function () {
+    localStorage.removeItem('backend_token');
+    setToken(null);
+    auth.signOut();
+  };
 
   const { filteredItems: filteredList, handleSearchChange } = useSearchFilter({
     items: list,
@@ -205,6 +214,12 @@ export const Menu = () => {
         </div>
         <div className="flex items-center justify-between border-t border-bolt-elements-borderColor p-4">
           <SettingsButton onClick={() => setIsSettingsOpen(true)} />
+          <button
+            className="font-semibold bg-transparent text-#777777 hover:text-#ffffff hover:bg-#77777733 pl-2 pr-2 pt-1 pb-1 rounded"
+            onClick={logout}
+          >
+            Log out
+          </button>
           <ThemeSwitch />
         </div>
       </div>

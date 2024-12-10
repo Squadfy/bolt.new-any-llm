@@ -9,10 +9,9 @@ import { Menu } from '~/components/sidebar/Menu.client';
 import { IconButton } from '~/components/ui/IconButton';
 import { Workbench } from '~/components/workbench/Workbench.client';
 import { classNames } from '~/utils/classNames';
-import { MODEL_LIST, PROVIDER_LIST, initializeModelList } from '~/utils/constants';
+import { PROVIDER_LIST } from '~/utils/constants';
 import { Messages } from './Messages.client';
 import { SendButton } from './SendButton.client';
-import { APIKeyManager } from './APIKeyManager';
 import Cookies from 'js-cookie';
 import * as Tooltip from '@radix-ui/react-tooltip';
 
@@ -24,7 +23,6 @@ import { ExamplePrompts } from '~/components/chat/ExamplePrompts';
 import GitCloneButton from './GitCloneButton';
 
 import FilePreview from './FilePreview';
-import { ModelSelector } from '~/components/chat/ModelSelector';
 import { SpeechRecognitionButton } from '~/components/chat/SpeechRecognition';
 
 const TEXTAREA_MIN_HEIGHT = 76;
@@ -67,9 +65,6 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
       chatStarted = false,
       isStreaming = false,
       model,
-      setModel,
-      provider,
-      setProvider,
       input = '',
       enhancingPrompt,
       handleInputChange,
@@ -88,7 +83,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
     ref,
   ) => {
     const TEXTAREA_MAX_HEIGHT = chatStarted ? 400 : 200;
-    const [apiKeys, setApiKeys] = useState<Record<string, string>>(() => {
+    const [] = useState<Record<string, string>>(() => {
       const savedKeys = Cookies.get('apiKeys');
 
       if (savedKeys) {
@@ -102,7 +97,6 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
 
       return {};
     });
-    const [modelList, setModelList] = useState(MODEL_LIST);
     const [isModelSettingsCollapsed, setIsModelSettingsCollapsed] = useState(false);
     const [isListening, setIsListening] = useState(false);
     const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
@@ -157,7 +151,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
           const parsedKeys = JSON.parse(storedApiKeys);
 
           if (typeof parsedKeys === 'object' && parsedKeys !== null) {
-            setApiKeys(parsedKeys);
+            // setApiKeys(parsedKeys);
           }
         }
       } catch (error) {
@@ -166,10 +160,6 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
         // Clear invalid cookie data
         Cookies.remove('apiKeys');
       }
-
-      initializeModelList().then((modelList) => {
-        setModelList(modelList);
-      });
 
       if (typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -368,7 +358,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                   <rect className={classNames(styles.PromptEffectLine)} pathLength="100" strokeLinecap="round"></rect>
                   <rect className={classNames(styles.PromptShine)} x="48" y="24" width="70" height="1"></rect>
                 </svg>
-                <div>
+                {/* <div>
                   <div className={isModelSettingsCollapsed ? 'hidden' : ''}>
                     <ModelSelector
                       key={provider?.name + ':' + modelList.length}
@@ -392,7 +382,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                       />
                     )}
                   </div>
-                </div>
+                </div> */}
                 <FilePreview
                   files={uploadedFiles}
                   imageDataList={imageDataList}
