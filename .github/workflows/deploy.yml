@@ -31,7 +31,8 @@ jobs:
     #   run: pnpm run build
 
     - name: Debug ENVLOCAL
-      run: echo "$ENVLOCAL"
+      run: |
+        echo "${{ secrets.ENVLOCAL }}" | awk '{print "[REDACTED] " substr($0,1,20) "..."}'
 
     - name: Deploy to EC2
       env:
