@@ -1,0 +1,41 @@
+name: Deploy Bolt to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20.15.1
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install --global pnpm && pnpm install
+
+    - name: Build the app
+      run: pnpm run build
+
+    - name: Deploy to EC2
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+        HOST: ${{ secrets.EC2_HOST }}
+        USER: ${{ secrets.EC2_USER }}
+      run: |
+        echo "$SSH_PRIVATE_KEY" > key.pem
+        chmod 600 key.pem
+        scp -i key.pem -r ./build/* $USER@$HOST:/home/ubuntu/bolt/
+        ssh -i key.pem $USER@$HOST <<EOF
+        # pm2 stop bolt-app || true
+        # pm2 start pnpm --name bolt-app -- run dev --host
+        sudo systemctl restart nginx
+        EOF
