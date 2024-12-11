@@ -1,6 +1,7 @@
 version: 1
 applications:
-  - frontend:
+  - appRoot: './'
+    frontend:
       buildPath: '/'
       phases:
         preBuild:
@@ -14,10 +15,9 @@ applications:
           commands:
             - pnpm run start
       artifacts:
-        baseDirectory: '/'
+        baseDirectory: './'
         files:
           - "**/*"
       cache:
         paths:
           - node_modules/**/*
-    appRoot: '/'
