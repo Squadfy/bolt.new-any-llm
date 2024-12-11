@@ -40,7 +40,10 @@ jobs:
         chmod 600 key.pem
         mkdir -p ~/.ssh
         ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
-        scp -i key.pem -r ./build/* $USER@$HOST:/home/ubuntu/bolt/
+        scp -i key.pem -r ./* $USER@$HOST:/home/ubuntu/bolt/
+        ssh -i key.pem $USER@$HOST <<EOF
+        echo "$ENVFILE" > /var/www/html/.env.local
+        EOF
         ssh -i key.pem $USER@$HOST <<EOF
         # pm2 stop bolt-app || true
         # pm2 start pnpm --name bolt-app -- run dev --host
