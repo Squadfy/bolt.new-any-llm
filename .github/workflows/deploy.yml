@@ -42,11 +42,10 @@ jobs:
         ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
         scp -i key.pem -r ./* $USER@$HOST:/home/ubuntu/bolt/
         ssh -i key.pem $USER@$HOST <<EOF
-        source ~/.bashrc
         cd /home/ubuntu/bolt
-        pnpm install
+        /home/ubuntu/.nvm/versions/node/v20.15.1/bin/pnpm install
         echo "$ENVFILE" > /home/ubuntu/bolt/.env.local
         # pm2 stop bolt-app || true
-        # pm2 start pnpm --name bolt-app -- run dev --host
+        # pm2 start /home/ubuntu/.nvm/versions/node/v20.15.1/bin/pnpm --name bolt-app -- run dev --host
         sudo systemctl restart nginx
         EOF
