@@ -18,9 +18,12 @@ jobs:
       with:
         node-version: 20.15.1
         cache: 'pnpm'
+    
+    - name: Install pnpm
+      run: npm install -g pnpm
 
     - name: Install dependencies
-      run: npm install --global pnpm && pnpm install
+      run: pnpm install
 
     - name: Build the app
       run: pnpm run build
