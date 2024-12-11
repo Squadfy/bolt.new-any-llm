@@ -42,6 +42,7 @@ jobs:
         ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
         scp -i key.pem -r ./* $USER@$HOST:/home/ubuntu/bolt/
         ssh -i key.pem $USER@$HOST <<EOF
+        source ~/.bashrc
         cd /home/ubuntu/bolt
         pnpm install
         echo "$ENVFILE" > /home/ubuntu/bolt/.env.local
