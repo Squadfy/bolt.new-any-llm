@@ -48,7 +48,7 @@ jobs:
         cd /home/ubuntu/bolt
         echo "$ENVLOCAL" > .env.local
         pnpm install
-        # pm2 stop bolt-app || true
-        # pm2 start pnpm --name bolt-app -- run dev --host
+        pm2 stop bolt-app || true
+        pm2 start pnpm --name bolt-app -- run dev --host
         sudo systemctl restart nginx
         EOF
