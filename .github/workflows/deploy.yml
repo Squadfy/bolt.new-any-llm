@@ -39,20 +39,18 @@ jobs:
         SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
         HOST: ${{ secrets.EC2_HOST }}
         USER: ${{ secrets.EC2_USER }}
+        ENVLOCAL: ${{ secrets.ENVLOCAL }}
       run: |
         echo "$SSH_PRIVATE_KEY" > key.pem
         chmod 600 key.pem
         mkdir -p ~/.ssh
         ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
-
-        echo "$ENVLOCAL" > .env.local
-
         scp -i key.pem -r ./* $USER@$HOST:/home/ubuntu/bolt/
-        scp -i key.pem .env.local $USER@$HOST:/home/ubuntu/bolt/
-
+        
         ssh -i key.pem $USER@$HOST -t <<EOF
         source ~/.bashrc
         cd /home/ubuntu/bolt
+        echo "$ENVLOCAL" > .env.local
         pnpm install
         # pm2 stop bolt-app || true
         # pm2 start pnpm --name bolt-app -- run dev --host
