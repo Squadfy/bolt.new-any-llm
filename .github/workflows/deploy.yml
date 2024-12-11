@@ -24,11 +24,11 @@ jobs:
         node-version: 20.15.1
         cache: 'pnpm'
 
-    - name: Install dependencies
-      run: pnpm install
+    # - name: Install dependencies
+    #   run: pnpm install
 
-    - name: Build the app
-      run: pnpm run build
+    # - name: Build the app
+    #   run: pnpm run build
 
     - name: Deploy to EC2
       env:
@@ -42,9 +42,12 @@ jobs:
         ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
         scp -i key.pem -r ./* $USER@$HOST:/home/ubuntu/bolt/
         ssh -i key.pem $USER@$HOST <<EOF
-        echo "$ENVFILE" > /var/www/html/.env.local
-        EOF
-        ssh -i key.pem $USER@$HOST <<EOF
+        cd /home/ubuntu/bolt
+        if ! command -v pnpm &> /dev/null; then
+          npm install -g pnpm
+        fi
+        pnpm install
+        echo "$ENVFILE" > /home/ubuntu/bolt/.env.local
         # pm2 stop bolt-app || true
         # pm2 start pnpm --name bolt-app -- run dev --host
         sudo systemctl restart nginx
