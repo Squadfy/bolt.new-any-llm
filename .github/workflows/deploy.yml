@@ -38,6 +38,7 @@ jobs:
       run: |
         echo "$SSH_PRIVATE_KEY" > key.pem
         chmod 600 key.pem
+        mkdir -p ~/.ssh
         ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
         scp -i key.pem -r ./build/* $USER@$HOST:/home/ubuntu/bolt/
         ssh -i key.pem $USER@$HOST <<EOF
