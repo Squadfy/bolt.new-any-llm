@@ -30,6 +30,9 @@ jobs:
     # - name: Build the app
     #   run: pnpm run build
 
+    - name: Debug ENVFILE
+      run: echo "$ENVFILE"
+
     - name: Deploy to EC2
       env:
         SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
@@ -47,6 +50,7 @@ jobs:
         scp -i key.pem .env.local $USER@$HOST:/home/ubuntu/bolt/
 
         ssh -i key.pem $USER@$HOST -t <<EOF
+        source ~/.bashrc
         cd /home/ubuntu/bolt
         pnpm install
         echo "$ENVFILE" > /home/ubuntu/bolt/.env.local
