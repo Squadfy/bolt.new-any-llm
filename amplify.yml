@@ -11,11 +11,8 @@ applications:
         build:
           commands:
             - pnpm run build
-        start:
-          commands:
-            - pnpm run dev
       artifacts:
-        baseDirectory: './'
+        baseDirectory: 'build/server'
         files:
           - "**/*"
       cache:
