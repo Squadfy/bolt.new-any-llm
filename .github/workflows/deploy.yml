@@ -30,10 +30,6 @@ jobs:
     # - name: Build the app
     #   run: pnpm run build
 
-    - name: Debug ENVLOCAL
-      run: |
-        echo "${{ secrets.ENVLOCAL }}" | awk '{print "[REDACTED] " substr($0,1,20) "..."}'
-
     - name: Deploy to EC2
       env:
         SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
@@ -46,9 +42,10 @@ jobs:
         mkdir -p ~/.ssh
         ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
         scp -i key.pem -r ./* $USER@$HOST:/home/ubuntu/bolt/
-        
+
         ssh -i key.pem $USER@$HOST -t <<EOF
-        source ~/.bashrc
+        export PATH=\$PATH:/home/ubuntu/.nvm/versions/node/v20.15.1/bin/pnpm
+        export PATH=\$PATH:/home/ubuntu/.nvm/versions/node/v20.15.1/bin/node
         cd /home/ubuntu/bolt
         echo "$ENVLOCAL" > .env.local
         pnpm install
