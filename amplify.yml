@@ -13,7 +13,7 @@ applications:
             - pnpm run build
         start:
           commands:
-            - pnpm run start
+            - pnpm run dev
       artifacts:
         baseDirectory: './'
         files:
