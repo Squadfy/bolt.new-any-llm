@@ -43,9 +43,8 @@ jobs:
         ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
         scp -i key.pem -r ./* $USER@$HOST:/home/ubuntu/bolt/
 
-        ssh -i key.pem $USER@$HOST -t <<EOF
-        export PATH=\$PATH:/home/ubuntu/.nvm/versions/node/v20.15.1/bin/pnpm
-        export PATH=\$PATH:/home/ubuntu/.nvm/versions/node/v20.15.1/bin/node
+        ssh -i key.pem -t $USER@$HOST <<EOF
+        source ~/.bashrc
         cd /home/ubuntu/bolt
         echo "$ENVLOCAL" > .env.local
         pnpm install
