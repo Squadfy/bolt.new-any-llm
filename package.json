@@ -23,7 +23,8 @@
     "typecheck": "tsc",
     "typegen": "wrangler types",
     "preview": "pnpm run build && pnpm run start",
-    "prepare": "husky"
+    "prepare": "husky",
+    "postinstall": "cp patched-wrangler-dist-cli/cli.js node_modules/wrangler/wrangler-dist/cli.js"
   },
   "engines": {
     "node": ">=18.18.0"
@@ -128,7 +129,7 @@
     "vite-plugin-optimize-css-modules": "^1.1.0",
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^2.1.7",
-    "wrangler": "^3.91.0",
+    "wrangler": "^3.95.0",
     "zod": "^3.23.8"
   },
   "resolutions": {
