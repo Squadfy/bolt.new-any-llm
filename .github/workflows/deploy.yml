@@ -50,6 +50,7 @@ jobs:
         rsync -avz --delete -e "ssh -i key.pem" ./ $USER@$HOST:/home/ubuntu/bolt-building/
 
         ssh -i key.pem -t $USER@$HOST <<EOF
+        cd /home/ubuntu/bolt-building
         echo "$ENVLOCAL" > .env.local
         EOF
 
