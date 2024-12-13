@@ -46,7 +46,8 @@ jobs:
         mkdir -p /home/ubuntu/bolt-building
         EOF
 
-        scp -i key.pem -r ./* $USER@$HOST:/home/ubuntu/bolt-building/
+        # scp -i key.pem -r ./* $USER@$HOST:/home/ubuntu/bolt-building/
+        rsync -avz --delete -e "ssh -i key.pem" ./ $USER@$HOST:/home/ubuntu/bolt-building/
 
         ssh -i key.pem -t $USER@$HOST <<EOF
         echo "$ENVLOCAL" > .env.local
